@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shopnepal/common/wrapper/multi_bloc_wrapper.dart';
-import 'package:shopnepal/common/wrapper/multi_repository_wrapper.dart';
-import 'common/config/config.dart';
-import 'common/theme/theme.dart';
-import 'common/utils/toast_message_utils.dart';
+import 'package:shopnepal/core/wrapper/multi_bloc_wrapper.dart';
+import 'package:shopnepal/core/wrapper/multi_repository_wrapper.dart';
+import 'core/config/config.dart';
+import 'core/theme/theme.dart';
+import 'core/utils/toast_message_utils.dart';
 import 'navigation/navigation.dart';
 
 Future<void> main() async {

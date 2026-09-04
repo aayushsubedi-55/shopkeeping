@@ -89,3 +89,19 @@ class SplashRoute extends PageRouteInfo<void> {
     },
   );
 }
+
+/// generated route for
+/// [SupplierScreen]
+class SupplierRoute extends PageRouteInfo<void> {
+  const SupplierRoute({List<PageRouteInfo>? children})
+    : super(SupplierRoute.name, initialChildren: children);
+
+  static const String name = 'SupplierRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const SupplierScreen();
+    },
+  );
+}
