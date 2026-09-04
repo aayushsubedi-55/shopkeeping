@@ -1,0 +1,271 @@
+require "json"
+
+default_platform(:android)
+
+platform :android do
+  desc "Build and upload the app bundle to Google Play"
+
+  def env_flag_enabled?(name)
+    ENV[name].to_s.strip == "1"
+  end
+
+  def env_prepend_once!(name, value)
+    current = ENV[name].to_s
+    return if current.include?(value)
+
+    ENV[name] = current.empty? ? value : "#{value} #{current}"
+  end
+
+  def resolved_java_home
+    configured = ENV["FASTLANE_JAVA_HOME"].to_s.strip
+    return configured if configured.length > 0 && File.directory?(configured)
+
+    # Avoid Android Studio's bundled JBR (we've seen JVM crashes from it during Gradle builds).
+    configured = ENV["JAVA_HOME"].to_s.strip
+    if configured.length > 0 && configured.include?("Android Studio.app/Contents/jbr")
+      configured = ""
+    end
+    return configured if configured.length > 0 && File.directory?(configured)
+
+    candidates = [
+      "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
+      "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home"
+    ]
+
+    candidates.find { |path| File.directory?(path) }
+  end
+
+  def ensure_stable_java!
+    java_home = resolved_java_home
+
+    if java_home.nil? || java_home.empty?
+      UI.user_error!(
+        "No stable Java found for Gradle. Install Homebrew OpenJDK 17 (recommended: `brew install openjdk@17`) " \
+        "and/or set FASTLANE_JAVA_HOME."
+      )
+    end
+
+    ENV["JAVA_HOME"] = java_home
+    java_bin = File.join(java_home, "bin")
+    ENV["PATH"] = "#{java_bin}:#{ENV['PATH']}" unless ENV["PATH"].to_s.start_with?("#{java_bin}:")
+
+    # Force Gradle to use the same Java even if other Gradle daemons (e.g. from
+    # Android Studio) are running with a different JVM.
+    env_prepend_once!("GRADLE_OPTS", "-Dorg.gradle.java.home=#{java_home}")
+  end
+
+  def stop_gradle_daemons!
+    # Stopping daemons can interrupt a build if another Gradle invocation is
+    # active/starting. Keep this opt-in.
+    return unless ENV["STOP_GRADLE_DAEMONS"].to_s.strip == "1"
+
+    # Fastfile runs from android/fastlane, so `cd ..` lands in android/
+    sh("cd .. && ./gradlew --stop || true")
+  end
+
+  def resolved_android_json_key_file
+    configured = ENV["ANDROID_JSON_KEY_FILE"].to_s.strip
+    if configured.length > 0
+      expanded = File.expand_path(configured, Dir.pwd)
+      return expanded if File.exist?(expanded)
+    end
+
+    # Fallback for this repository: pick a service-account key from the repo root.
+    repo_root = File.expand_path("../..", __dir__)
+
+    preferred = [
+      "shopnepal-project-3cf065d61df7.json",
+      "shopnepal-play.json",
+      "shopnepal-play-store.json",
+      "play-store-credentials.json"
+    ]
+
+    preferred.each do |name|
+      candidate = File.join(repo_root, name)
+      return candidate if File.exist?(candidate)
+    end
+
+    # Prefer shopnepal-play-*.json if present.
+    Dir[File.join(repo_root, "shopnepal-play-*.json")].each do |candidate|
+      return candidate if File.exist?(candidate)
+    end
+
+    # If filename changes, fall back to "any valid service_account json" in repo root.
+    service_account_jsons = Dir[File.join(repo_root, "*.json")].select do |path|
+      begin
+        data = JSON.parse(File.read(path))
+        data.is_a?(Hash) &&
+          data["type"] == "service_account" &&
+          data["client_email"].to_s.length > 0 &&
+          data["private_key"].to_s.include?("BEGIN PRIVATE KEY")
+      rescue StandardError
+        false
+      end
+    end
+
+    return service_account_jsons.first if service_account_jsons.length == 1
+    if service_account_jsons.length > 1
+      UI.user_error!(
+        "Multiple service-account JSON keys found in repo root. " \
+        "Set ANDROID_JSON_KEY_FILE explicitly. Found: #{service_account_jsons.join(', ')}"
+      )
+    end
+
+    UI.user_error!("Set valid ANDROID_JSON_KEY_FILE. Current: #{configured}")
+  end
+
+  def should_flutter_clean?
+    # `flutter clean` also touches iOS (xcodebuild clean) and can be flaky.
+    # Keep it opt-in; you can still run it manually when needed.
+    env_flag_enabled?("FLUTTER_CLEAN")
+  end
+
+  def flutter_split_debug_info
+    flavor = ENV["FLUTTER_FLAVOR"].to_s.strip
+    split_debug_info = ENV["SPLIT_DEBUG_INFO_PATH"].to_s.strip
+    split_debug_info = "build/debug-info" if split_debug_info.empty?
+
+    [flavor, split_debug_info]
+  end
+
+  def flutter_prepare!
+    # Fastlane cwd is android/; Flutter project is the repo root.
+    sh("cd .. && flutter clean") if should_flutter_clean?
+    sh("cd .. && flutter pub get")
+  end
+
+  def flutter_build_aab!
+    flavor, split_debug_info = flutter_split_debug_info
+
+    cmd = "cd .. && flutter build appbundle"
+    cmd += " --flavor #{flavor}" unless flavor.empty?
+    cmd += " --obfuscate --split-debug-info=#{split_debug_info}"
+
+    sh(cmd)
+  end
+
+  def resolved_aab_path
+    flavor = ENV["FLUTTER_FLAVOR"].to_s.strip
+    return "../build/app/outputs/bundle/release/app-release.aab" if flavor.empty?
+
+    "../build/app/outputs/bundle/#{flavor}Release/app-#{flavor}-release.aab"
+  end
+
+  def play_validate_only?
+    env_flag_enabled?("PLAY_VALIDATE_ONLY")
+  end
+
+  def play_package_name
+    "com.shopnepal.app"
+  end
+
+  desc "Upload Play Store metadata only"
+  lane :update_metadata_android do
+    supply(
+      metadata_path: "fastlane/metadata/android",
+      json_key: resolved_android_json_key_file,
+      package_name: play_package_name,
+      validate_only: play_validate_only?,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_images: true,
+      skip_upload_changelogs: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build the release AAB (no upload)"
+  lane :buildReleaseAab do
+    ensure_stable_java!
+    stop_gradle_daemons!
+    flutter_prepare!
+    flutter_build_aab!
+  end
+
+  desc "Pull all Play Store metadata, images and screenshots"
+  lane :pull_playstore_metadata do
+    metadata_path = File.expand_path("metadata/android", __dir__)
+    tmp_pull_path = metadata_path + "__pull"
+
+    # `fastlane supply init` won't download if the metadata directory already exists.
+    # So we pull into a fresh folder and then replace the existing metadata.
+    sh("rm -rf '#{tmp_pull_path}'")
+
+    sh(
+      "fastlane supply init " \
+      "--package_name #{play_package_name} " \
+      "--json_key '#{resolved_android_json_key_file}' " \
+      "--metadata_path '#{tmp_pull_path}'"
+    )
+
+    sh("rm -rf '#{metadata_path}'")
+    sh("mv '#{tmp_pull_path}' '#{metadata_path}'")
+  end
+
+  # alpha - closed testing (or custom track named alpha)
+  # beta - open testing
+  # production - production
+
+  lane :playstoreAlpha do
+    ensure_stable_java!
+    stop_gradle_daemons!
+    flutter_prepare!
+    flutter_build_aab!
+
+    upload_to_play_store(
+      track: "alpha",
+      aab: resolved_aab_path,
+      json_key: resolved_android_json_key_file,
+      metadata_path: "fastlane/metadata/android",
+      package_name: play_package_name,
+      validate_only: play_validate_only?,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "completed"
+    )
+  end
+
+  lane :playstoreBeta do
+    ensure_stable_java!
+    stop_gradle_daemons!
+    flutter_prepare!
+    flutter_build_aab!
+
+    upload_to_play_store(
+      track: "beta",
+      aab: resolved_aab_path,
+      json_key: resolved_android_json_key_file,
+      metadata_path: "fastlane/metadata/android",
+      package_name: play_package_name,
+      validate_only: play_validate_only?,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "completed"
+    )
+  end
+
+  lane :playstoreProduction do
+    ensure_stable_java!
+    stop_gradle_daemons!
+    flutter_prepare!
+    flutter_build_aab!
+
+    upload_to_play_store(
+      track: "production",
+      aab: resolved_aab_path,
+      json_key: resolved_android_json_key_file,
+      metadata_path: "fastlane/metadata/android",
+      package_name: play_package_name,
+      validate_only: play_validate_only?,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "completed"
+    )
+  end
+end
