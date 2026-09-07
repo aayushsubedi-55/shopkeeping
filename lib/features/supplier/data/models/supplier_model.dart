@@ -27,11 +27,12 @@ class SupplierModel extends Supplier {
   }
 
   /// Request body for create/update. `id`/timestamps are server-assigned and
-  /// deliberately left out.
+  /// deliberately left out. The backend's Pydantic schemas take snake_case
+  /// with no alias, so keys here must match exactly.
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
-      'wechatId': wechatId,
+      'wechat_id': wechatId,
     };
   }
 
@@ -39,11 +40,9 @@ class SupplierModel extends Supplier {
     return SupplierModel(
       id: map['id']?.toString() ?? '',
       name: map['name']?.toString() ?? '',
-      // Guessed camelCase to match the rest of the envelope (see UserModel);
-      // the backend doesn't exist yet, so tolerate a snake_case fallback too.
-      wechatId: (map['wechatId'] ?? map['wechat_id'])?.toString(),
-      createdAt: _parseDate(map['createdAt'] ?? map['created_at']),
-      updatedAt: _parseDate(map['updatedAt'] ?? map['updated_at']),
+      wechatId: map['wechat_id']?.toString(),
+      createdAt: _parseDate(map['created_at']),
+      updatedAt: _parseDate(map['updated_at']),
     );
   }
 

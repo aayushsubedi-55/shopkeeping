@@ -15,15 +15,17 @@ class StartupCubit extends Cubit<CommonState> {
   bool get hasSession => authRepository.isAuthenticated;
 
   Future<void> checkStartupSession() async {
-    emit(CommonLoading());
+    if (!isClosed) emit(CommonLoading());
 
     try {
       await authRepository.initial();
-      emit(CommonStateSuccess<bool>(data: authRepository.isAuthenticated));
+      if (!isClosed) {
+        emit(CommonStateSuccess<bool>(data: authRepository.isAuthenticated));
+      }
     } catch (e) {
       // A broken cached session must not trap the user on the splash screen —
       // fall through to login and let them sign in again.
-      emit(const CommonStateSuccess<bool>(data: false));
+      if (!isClosed) emit(const CommonStateSuccess<bool>(data: false));
     }
   }
 }

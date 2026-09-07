@@ -7,6 +7,8 @@ import 'package:shopnepal/features/auth/data/repositories/auth_repository_impl.d
 import 'package:shopnepal/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shopnepal/features/media/data/repositories/media_repository_impl.dart';
 import 'package:shopnepal/features/media/domain/repositories/media_repository.dart';
+import 'package:shopnepal/features/product/data/repositories/product_repository_impl.dart';
+import 'package:shopnepal/features/product/domain/repositories/product_repository.dart';
 import 'package:shopnepal/features/supplier/data/repositories/supplier_repository_impl.dart';
 import 'package:shopnepal/features/supplier/domain/repositories/supplier_repository.dart';
 
@@ -55,6 +57,13 @@ class MultiRepositoryWrapper extends StatelessWidget {
 
         RepositoryProvider<SupplierRepository>(
           create: (context) => SupplierRepositoryImpl(
+            apiProvider: RepositoryProvider.of<ApiProvider>(context),
+          ),
+          lazy: true,
+        ),
+
+        RepositoryProvider<ProductRepository>(
+          create: (context) => ProductRepositoryImpl(
             apiProvider: RepositoryProvider.of<ApiProvider>(context),
           ),
           lazy: true,
