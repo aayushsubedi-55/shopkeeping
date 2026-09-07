@@ -5,6 +5,7 @@ import 'package:shopnepal/features/auth/presentation/pages/login_screen.dart';
 import 'package:shopnepal/features/home/presentation/pages/dashboard_screen.dart';
 import 'package:shopnepal/features/home/presentation/pages/settings_screen.dart';
 import 'package:shopnepal/features/onboard/presentation/pages/splash_screen.dart';
+import 'package:shopnepal/features/product/presentation/pages/product_page.dart';
 import 'package:shopnepal/features/supplier/presentation/pages/supplier_page.dart';
 
 part 'app_router.gr.dart';
@@ -19,5 +20,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SettingsRoute.page),
     AutoRoute(page: ChangePasswordRoute.page),
     AutoRoute(page: SupplierRoute.page),
+    AutoRoute(page: ProductRoute.page),
   ];
 }

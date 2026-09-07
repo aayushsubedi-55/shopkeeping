@@ -63,6 +63,8 @@ class AppNavigator {
 
   static Future<void> toSuppliers() => push(const SupplierRoute());
 
+  static Future<void> toProducts() => push(const ProductRoute());
+
   /// Ends the splash screen at the right place for the current session.
   static Future<void> completeStartup({required bool isAuthenticated}) =>
       isAuthenticated ? toDashboard() : toLogin();

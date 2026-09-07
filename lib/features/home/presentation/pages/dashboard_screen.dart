@@ -115,18 +115,28 @@ class _EmptyTab extends StatelessWidget {
   }
 }
 
-/// Products aren't built yet (that's the next Sprint 7 slice); suppliers is,
-/// so the Catalog tab launches straight to it for now.
+/// Capture → review → confirm isn't built yet (that's the rest of Sprint 7);
+/// suppliers and products are, so the Catalog tab launches straight to them.
 class _CatalogTabLauncher extends StatelessWidget {
   const _CatalogTabLauncher();
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: TextButton.icon(
-        onPressed: () => AppNavigator.toSuppliers(),
-        icon: const Icon(Icons.local_shipping_outlined),
-        label: const Text('Suppliers'),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton.icon(
+            onPressed: () => AppNavigator.toSuppliers(),
+            icon: const Icon(Icons.local_shipping_outlined),
+            label: const Text('Suppliers'),
+          ),
+          TextButton.icon(
+            onPressed: () => AppNavigator.toProducts(),
+            icon: const Icon(Icons.style_outlined),
+            label: const Text('Products'),
+          ),
+        ],
       ),
     );
   }
