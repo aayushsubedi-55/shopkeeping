@@ -82,7 +82,7 @@ class EnvValue {
   );
 
   static const Env development = Env(
-    baseUrl: 'http://192.168.2.123:8000',
+    baseUrl: 'http://10.0.2.2:8000',
     appName: 'ShopNepal Dev',
     appVersion: '0.1.0-dev',
   );
