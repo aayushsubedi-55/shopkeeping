@@ -1,4 +1,4 @@
-import 'package:shopnepal/features/auth/resource/auth_repository.dart';
+import 'package:shopnepal/features/auth/domain/repositories/auth_repository.dart';
 
 /// Global access to [AuthRepository] for layers that cannot use BuildContext
 /// (e.g. Dio interceptors).

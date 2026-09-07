@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:shopnepal/common/utils/toast_message_utils.dart';
+import 'package:shopnepal/core/utils/toast_message_utils.dart';
 import 'package:shopnepal/navigation/app_router.dart';
 
 /// Central navigation service.
@@ -60,6 +60,10 @@ class AppNavigator {
   static Future<void> toSettings() => push(const SettingsRoute());
 
   static Future<void> toChangePassword() => push(const ChangePasswordRoute());
+
+  static Future<void> toSuppliers() => push(const SupplierRoute());
+
+  static Future<void> toProducts() => push(const ProductRoute());
 
   /// Ends the splash screen at the right place for the current session.
   static Future<void> completeStartup({required bool isAuthenticated}) =>
