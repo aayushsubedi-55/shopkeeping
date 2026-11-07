@@ -14,4 +14,16 @@ class MoneyUtils {
   static String format(String currencySymbol, num value) {
     return '$currencySymbol ${formatAmount(value)}';
   }
+
+  /// Format NPR (Nepalese Rupees)
+  static String formatNpr(String value) {
+    final num parsed = num.tryParse(value) ?? 0;
+    return 'Rs. ${formatAmount(parsed)}';
+  }
+
+  /// Format CNY (Chinese Yuan)
+  static String formatCny(String value) {
+    final num parsed = num.tryParse(value) ?? 0;
+    return '¥ ${formatAmount(parsed)}';
+  }
 }

@@ -5,6 +5,10 @@ import 'package:shopnepal/core/network/api_provider.dart';
 import 'package:shopnepal/core/storage/storage.dart';
 import 'package:shopnepal/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:shopnepal/features/auth/domain/repositories/auth_repository.dart';
+import 'package:shopnepal/features/extraction/data/repositories/extraction_repository_impl.dart';
+import 'package:shopnepal/features/extraction/domain/repositories/extraction_repository.dart';
+import 'package:shopnepal/features/import_order/data/repositories/import_order_repository_impl.dart';
+import 'package:shopnepal/features/import_order/domain/repositories/import_order_repository.dart';
 import 'package:shopnepal/features/media/data/repositories/media_repository_impl.dart';
 import 'package:shopnepal/features/media/domain/repositories/media_repository.dart';
 import 'package:shopnepal/features/product/data/repositories/product_repository_impl.dart';
@@ -64,6 +68,20 @@ class MultiRepositoryWrapper extends StatelessWidget {
 
         RepositoryProvider<ProductRepository>(
           create: (context) => ProductRepositoryImpl(
+            apiProvider: RepositoryProvider.of<ApiProvider>(context),
+          ),
+          lazy: true,
+        ),
+
+        RepositoryProvider<ImportOrderRepository>(
+          create: (context) => ImportOrderRepositoryImpl(
+            apiProvider: RepositoryProvider.of<ApiProvider>(context),
+          ),
+          lazy: true,
+        ),
+
+        RepositoryProvider<ExtractionRepository>(
+          create: (context) => ExtractionRepositoryImpl(
             apiProvider: RepositoryProvider.of<ApiProvider>(context),
           ),
           lazy: true,

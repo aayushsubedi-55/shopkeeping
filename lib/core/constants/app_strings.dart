@@ -125,4 +125,101 @@ class AppStrings {
   static const String earnCoins = 'Earn Coins';
   static const String withEveryOrder = 'With\nEvery Order';
   static const String theLineEnjoyTheRoll = 'The Line,\nEnjoy The Roll';
+
+  // Import Orders
+  static const String importOrders = 'Import Orders';
+  static const String orderLines = 'Order Lines';
+  static const String createOrder = 'Create Order';
+  static const String editOrder = 'Edit Order';
+  static const String update = 'Update';
+  static const String addOrderLine = 'Add Order Line';
+  static const String editOrderLine = 'Edit Order Line';
+  static const String noImportOrders = 'No import orders yet';
+  static const String createFirstOrder = 'Create First Order';
+  static const String noOrderLines = 'No order lines yet';
+  static const String addFirstLine = 'Add First Line';
+  static const String receiveOrder = 'Receive Order';
+  static const String receiving = 'Receiving...';
+  static const String status = 'Status';
+  static const String draft = 'Draft';
+  static const String ordered = 'Ordered';
+  static const String received = 'Received';
+  static const String cancelled = 'Cancelled';
+  static const String fxRateToNpr = 'FX Rate (CNY → NPR)';
+  static const String orderDate = 'Order Date';
+  static const String freightNpr = 'Freight (NPR)';
+  static const String customsNpr = 'Customs (NPR)';
+  static const String otherNpr = 'Other (NPR)';
+  static const String cases = 'Cases';
+  static const String unitPricePerCase = 'Unit Price (per case)';
+  static const String unitPricePerPair = 'Unit Price (per pair)';
+  static const String priceBasis = 'Price Basis';
+  static const String perCase = 'Per Case';
+  static const String perPair = 'Per Pair';
+  static const String currency = 'Currency';
+  static const String sizeRatio = 'Size Ratio';
+  static const String size = 'Size';
+  static const String quantity = 'Quantity';
+  static const String noRatioSet = 'No ratio set. Add sizes below.';
+  static const String selectProduct = 'Please select a product';
+  static const String selectProductAndSize = 'Please select a product and size';
+  static const String orderDateFormat = 'Order Date: %s/%s/%s';
+
+  // Stock
+  static const String stock = 'Stock';
+  static const String stockMovement = 'Stock Movement';
+  static const String noStock = 'No stock recorded yet';
+  static const String addStock = 'Add Stock';
+  static const String lowStock = 'Low Stock';
+  static const String qtyNegative = 'Quantity (negative for sale/damage)';
+  static const String qtyPositive = 'Quantity (positive for adjustment)';
+  static const String qtyMustBeNegative = 'Quantity must be negative for sale/damage';
+  static const String qtyMustBePositive = 'Quantity must be positive for adjustment';
+  static const String invalidQty = 'Invalid quantity';
+  static const String reason = 'Reason';
+  static const String sale = 'Sale';
+  static const String adjustment = 'Adjustment';
+  static const String damage = 'Damage';
+  static const String record = 'Record';
+
+  // Reports
+  static const String landedCostReport = 'Landed Cost Report';
+  static const String totalPairs = 'Total Pairs';
+  static const String pairsPerCase = 'Pairs/Case';
+  static const String goodsCny = 'Goods (CNY)';
+  static const String goodsNpr = 'Goods (NPR)';
+  static const String overheadNpr = 'Overhead (NPR)';
+  static const String landedCostPerPair = 'Landed Cost/Pair (NPR)';
+  static const String noData = 'No data available';
+
+  // Extraction
+  static const String extractFromPhoto = 'Extract from Photo';
+  static const String extractDescription = 'Take a photo of a supplier offer sheet to extract product details automatically';
+  static const String takePhoto = 'Take Photo';
+  static const String chooseFromGallery = 'Choose from Gallery';
+  static const String extracting = 'Extracting data...';
+  static const String extractionFailed = 'Extraction Failed';
+  static const String tryAgain = 'Try Again';
+  static const String retakePhoto = 'Retake Photo';
+  static const String extractedData = 'Extracted Data';
+  static const String extractedProducts = 'Products extracted: %d';
+  static const String supplierName = 'Supplier Name';
+  static const String supplierWechat = 'Supplier WeChat';
+  static const String notes = 'Notes';
+  static const String createOrderFromExtraction = 'Create Order';
+
+  // Common
+  static const String saving = 'Saving...';
+  static const String requiredField = 'This field is required';
+  static const String invalidNumber = 'Invalid number';
+  static const String invalidAmount = 'Invalid amount';
+  static const String somethingWentWrong = 'Something went wrong';
+  static const String retry = 'Retry';
+  static const String cancel = 'Cancel';
+  static const String delete = 'Delete';
+  static const String confirmDeleteLine = 'Are you sure you want to delete this order line?';
+  static const String deleteLine = 'Delete Line';
+  static const String product = 'Product';
+  static const String add = 'Add';
+  static const String sizeRange = 'Size Range';
 }
